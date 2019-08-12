@@ -1,0 +1,18 @@
+* Thinking Programs
+
+** A Lisp Adventure
+
+
+* Chapter I: A Remembrance
+
+Let's remember Clojure
+
+#+begin_src clojure :results output
+
+(println "Hello, Brown Bag")
+(println (+ 1 2))
+
+
+#+end_src
+
+
