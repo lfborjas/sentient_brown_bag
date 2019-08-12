@@ -26,4 +26,6 @@ To run the presentation from emacs, go to `presentation.org` and run `M-x org-pr
 * To evaluate code, make sure the code block has `:results output` as the option, and run `C-c C-c` -- the output will be added in a `RESULTS` section
 below the code.
 
+For more code interaction tips, check out the [Babel](https://orgmode.org/worg/org-contrib/babel/intro.html#results) documentation.
+
 To create a JS presentation off the org file, use: 

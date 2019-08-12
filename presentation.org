@@ -1,3 +1,4 @@
+
 * Thinking Programs
 
 ** A Lisp Adventure
@@ -5,14 +6,116 @@
 
 * Chapter I: A Remembrance
 
-Let's remember Clojure
+Let's remember Clojure: it barely has syntax
 
 #+begin_src clojure :results output
 
-(println "Hello, Brown Bag")
-(println (+ 1 2))
+;; values are values
+5
+nil
+"Hi there"
 
+;; vectors and maps (look ma, no commas!)
+[1 2 3 4]
+{:hello "maps" :with "keys" :and "values"}
+
+;; and of course lists
+'(4 3 2 1)
+
+;; expressions evaluate to values
+(+ 1 1)
+(if true "truth" "lies")
+(conj  [1 2 3 4] 5)
+(conj '(4 3 2 1) 5)
+
+;; functions are easy
+((fn flip1 [a b] (vector b a)) :x :y)
+(#(vector %2 %1) :x :y)
+
+;; destructuring is cool
+((fn flip2 [[a b & _]] (vector b a)) [:x :y :z])
+((fn greet! [{name :name}] (str "hello " name)) {:name "Luis" :age 666})
+
+;; scoping is lexical
+(let [x 2
+      y 3]
+ (Math/pow x y))
+
+;; functional approach to sequence stuff:
+
+(reduce + (filter odd? (range 1 10)))
+
+;; macros aren't scary
+(defmacro infix [a op b] `(~op ~a ~b))
+(infix 1 + 2)
+(infix 1 + (infix 2 + 2))
 
 #+end_src
+
+
+* Chapter II: The Problem of Search
+
+Consider the game of Sudoku:
+
+- Given a 9x9 grid, fill in the blanks such as
+- Every row has only one ocurrence of 1-9
+- Same with every column
+- Same with every 3x3 square in the grid
+
+Consider the ideal of functional programming
+
+- Deal with immutable structures
+- The solution should be as complex as the problem, not more (declarative)
+- I.e. the /what/ should be unencumbered by the /how/
+
+* A declarative solution
+
+#+begin_src clojure :results output
+
+(require '(sentient_brown_bag/helpers as :h))
+
+(defn solve-sudoku
+  [board] ;; given a board
+  (if-let [[i & _] ;; get the first position found, if any
+           (and (some '#{-} board)  ;; is there still at least one empty cell?
+                (h/pos  '#{-} board))] ;; find all positions for empty cells
+    (flatten (map #(solve-sudoku (assoc board i %)) ;; solve the board with the new placement (creating a new board!)
+                                                    ;; it will either go deeper, one solved cell each time, or terminate
+                  (h/possible-placements board i))) ;; get all possible numbers for this position
+    board)) ;; no empty positions were found, return the board untouched
+
+;; some notes:
+
+(some '#{-} '[1 - - 2])
+(some '#{-} '[1 2 3 4])
+(assoc '[:a :b - :d] 2 :c)
+(if-let [[i & _] [4 3 2]] i :empty)
+(if-let [[i & _] nil] i :empty)
+
+#+end_src
+
+Of course, all the beauty fades away when you look into all the [[file:src/main.clj] [ancillary functions]] necessary.
+
+*Also, think about the time and space complexity!*
+
+* The ugly underbelly of a declarative solution
+
+TODO: add diagram with solution tree
+
+* Chapter III: The Gift of Knowledge
+
+- Define variables and /terms/
+- Lil bit of code to do inference
+- Lil bit of code to deal with seqs
+
+
+* Chapter IV: The Reasoned Clojurian
+
+- Quick core.logic primer
+- Finite domains
+
+* Chapter V: A Sentient Brown Bag
+
+- Present core.logic solution
 
 
