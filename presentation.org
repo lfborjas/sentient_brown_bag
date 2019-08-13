@@ -95,20 +95,29 @@ A bit terse, but close to how we'd describe the solution:
 
 #+begin_src clojure :results output
 
-(require '(sentient_brown_bag/helpers as :h))
+(require '(sentient-brown-bag.helpers as :h))
+
+(print (time (h/pprint-board h/sample-board)))
 
 (defn solve-sudoku
-  [board] ;; given a board
-  (if-let [[i & _] ;; get the first position found, if any
-           (and (some  '#{-} board)  ;; is there at least one empty cell?
-                (h/pos '#{-} board))] ;; find all positions for empty cells
-    (flatten (map #(solve-sudoku (assoc board i %)) ;; solve the board with the new placement (creating a new board!)
-                                                    ;; it will either go deeper, one solved cell each time, or terminate
-                  (h/possible-placements board i))) ;; get all possible numbers for this position
-    board)) ;; no empty positions were found, return the board untouched
+  ;; given a board
+  [board] 
+  ;; get the first position found, if any
+  (if-let [[i & _] 
+           ;; is there at least one empty cell?
+           (and (some  '#{-} board)  
+                ;; find all positions for empty cells
+                (h/pos '#{-} board))] 
+    ;; solve the board with the new placement (creating a new board!)
+    ;; it will either go deeper, one solved cell each time, or terminate
+    (flatten (map #(solve-sudoku (assoc board i %)) 
+                  ;; get all possible numbers for this position
+                  (h/possible-placements board i))) 
+    ;; no empty positions were found, return the board untouched
+    board)) 
 
 ;; pipe the sample board into the solver, and print the result
-(time (-> h/*sample-board* solve-sudoku h/pprint-board))
+(print (time (-> h/sample-board solve-sudoku h/pprint-board)))
 
 #+end_src
 
