@@ -1,4 +1,4 @@
-(ns sentient-brown-bag.helpers
+(ns sentient-brown-bag.sudoku
   (:require [clojure.pprint :as p]
             [clojure.set    :as set]))
 
@@ -17,6 +17,9 @@
     - - - - 4 - - - 6
     - 4 - 7 - - - 2 -
     - 2 - 6 - - - - 3])
+
+
+;; A couple of convenience functions for REPL printing
 
 (defn prep
   "Will create a list with lists representing each row,
@@ -52,6 +55,8 @@
   (print (-> example-board prep print-board))
   (pprint-board example-board))
 
+
+;; GET READY FOR SOME BRUTE FORCE!!
 
 ;; first, some utility functions for navigation:
 ;; given a vector of rows:
@@ -172,3 +177,9 @@
                    x (range row (+ row 3))
                    y (range col (+ col 3))]
                (get-in rows [x y]))))
+
+(comment
+  (print example-board)
+  (p/pprint (rowify example-board))
+  (p/pprint (-> example-board rowify colify))
+  (p/pprint (-> example-board  rowify subgrid)))
