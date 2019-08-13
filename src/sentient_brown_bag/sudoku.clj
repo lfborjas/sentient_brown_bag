@@ -1,6 +1,8 @@
 (ns sentient-brown-bag.sudoku
   (:require [clojure.pprint :as p]
-            [clojure.set    :as set]))
+            [clojure.set    :as set]
+            [clojure.core.logic :as logic]
+            [clojure.core.logic.fd :as fd]))
 
 ;; all from: https://github.com/lfborjas/clojure-playground/blob/master/src/clojure_playground/sudoku.clj
 
@@ -183,3 +185,94 @@
   (p/pprint (rowify example-board))
   (p/pprint (-> example-board rowify colify))
   (p/pprint (-> example-board  rowify subgrid)))
+
+;; some setup for the logic stuff:
+
+;;; Create a fresh logic board (i.e. a bunch of unknowns to begin with)
+
+(def logic-board #(repeatedly 81 logic/lvar))
+
+(defn init
+  "Takes a blank logic board and a puzzle board and recursively
+  binds logic variables to the latter's knowns and unknowns"
+  [[lv & lvs] [cell & cells]]
+  (if lv
+    (logic/fresh []
+      (if (= '- cell)
+        logic/succeed
+        (logic/== lv cell))
+      (init lvs cells))
+    logic/succeed))
+
+(comment
+  (p/pprint (take 9 (logic-board)))
+  ;; TODO: how to print `init`?
+  #_(p/pprint (init (logic-board) example-board)))
+
+(defn solve-logically [board]
+  (let [legal-nums (fd/interval 1 9)
+        lvars (logic-board)
+        rows  (rowify lvars)
+        cols  (colify rows)
+        grids (subgrid rows)]
+    (logic/run 1 [q]
+      (init lvars board)
+      (logic/everyg #(fd/in % legal-nums) lvars)
+      (logic/everyg fd/distinct rows)
+      (logic/everyg fd/distinct cols)
+      (logic/everyg fd/distinct grids)
+      (logic/== q lvars))))
+
+(comment
+  (pprint-board example-board)
+  (time (-> example-board solve-logically first pprint-board))
+  (time (-> example-board solve-brute-force pprint-board)))
+
+
+
+
+;; Starting board:
+;; -------------------------------
+;; | 3  -  - | -  -  5 | -  1  - | 
+;; | -  7  - | -  -  6 | -  3  - | 
+;; | 1  -  - | -  9  - | -  -  - | 
+;; -------------------------------
+;; | 7  -  8 | -  -  - | -  9  - | 
+;; | 9  -  - | 4  -  8 | -  -  2 | 
+;; | -  6  - | -  -  - | 5  -  1 | 
+;; -------------------------------
+;; | -  -  - | -  4  - | -  -  6 | 
+;; | -  4  - | 7  -  - | -  2  - | 
+;; | -  2  - | 6  -  - | -  -  3 | 
+;; -------------------------------
+;; BRUTE FORCE:
+;; -------------------------------
+;; | 3  8  6 | 2  7  5 | 4  1  9 | 
+;; | 4  7  9 | 8  1  6 | 2  3  5 | 
+;; | 1  5  2 | 3  9  4 | 8  6  7 | 
+;; -------------------------------
+;; | 7  3  8 | 5  2  1 | 6  9  4 | 
+;; | 9  1  5 | 4  6  8 | 3  7  2 | 
+;; | 2  6  4 | 9  3  7 | 5  8  1 | 
+;; -------------------------------
+;; | 8  9  3 | 1  4  2 | 7  5  6 | 
+;; | 6  4  1 | 7  5  3 | 9  2  8 | 
+;; | 5  2  7 | 6  8  9 | 1  4  3 | 
+;; -------------------------------
+;; "Elapsed time: 933.055016 msecs"
+;;
+;; LOGICALLY:
+;; -------------------------------
+;; | 3  8  6 | 2  7  5 | 4  1  9 | 
+;; | 4  7  9 | 8  1  6 | 2  3  5 | 
+;; | 1  5  2 | 3  9  4 | 8  6  7 | 
+;; -------------------------------
+;; | 7  3  8 | 5  2  1 | 6  9  4 | 
+;; | 9  1  5 | 4  6  8 | 3  7  2 | 
+;; | 2  6  4 | 9  3  7 | 5  8  1 | 
+;; -------------------------------
+;; | 8  9  3 | 1  4  2 | 7  5  6 | 
+;; | 6  4  1 | 7  5  3 | 9  2  8 | 
+;; | 5  2  7 | 6  8  9 | 1  4  3 | 
+;; -------------------------------
+;; "Elapsed time: 49.425434 msecs"
