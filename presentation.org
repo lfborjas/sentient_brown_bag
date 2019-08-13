@@ -121,7 +121,7 @@ A bit terse, but close to how we'd describe the solution:
 
 #+end_src
 
-Time permitting, we can explore the [[file:src/sentient_brown_bag/sudoku.clj] [ancillary functions]] necessary.
+Time permitting, we can explore the [[file:src/sentient_brown_bag/sudoku.clj][ancillary functions]] necessary.
 
 
 * Some notes on the small details:
@@ -141,7 +141,7 @@ Time permitting, we can explore the [[file:src/sentient_brown_bag/sudoku.clj] [a
 #+end_src
 
 
-* The ugly underbelly of a declarative solution
+* The sad truth
 
 - The declarative version, although very unencumbered by minutia... could be slow
 - It recursively explores a potentially infinite space!
@@ -163,3 +163,11 @@ Time permitting, we can explore the [[file:src/sentient_brown_bag/sudoku.clj] [a
 * Chapter V: A Sentient Brown Bag
 
 - Present core.logic solution
+
+* Epilogue: Further Reading
+
+- [[https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-29.html#%_sec_4.4][SICP, Chapter 4, Section 4: Logic Programming]]
+- [[https://www.oreilly.com/library/view/the-joy-of/9781617291418/kindle_split_034.html][The Joy of Clojure: Chapter 16: "Thinking Programs"]]
+- [[https://github.com/joyofclojure/book-source/tree/master/src/clj/joy/logic][The Joy of Clojure source code for Chapter 16's code samples]]
+- [[https://mitpress.mit.edu/books/reasoned-schemer-second-edition][The Reasoned Schemer ($)]]
+- [[http://minikanren.org/][Implementations of miniKanren in a bunch of languages]]
