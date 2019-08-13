@@ -121,10 +121,7 @@ A bit terse, but close to how we'd describe the solution:
 
 #+end_src
 
-Of course, all the beauty fades away when you look into all the [[file:src/sentient_brown_bag/sudoku.clj] [ancillary functions]] necessary.
-
-*Think about the time and space complexity!*
-
+Time permitting, we can explore the [[file:src/sentient_brown_bag/sudoku.clj] [ancillary functions]] necessary.
 
 
 * Some notes on the small details:
@@ -144,10 +141,12 @@ Of course, all the beauty fades away when you look into all the [[file:src/senti
 #+end_src
 
 
-
 * The ugly underbelly of a declarative solution
 
-TODO: add diagram with solution tree
+- The declarative version, although very unencumbered by minutia... could be slow
+- It recursively explores a potentially infinite space!
+- Worst case, it's suboptimal in space and time complexity!
+- Maybe we should just give up and do it in C?
 
 * Chapter III: The Gift of Knowledge
 
