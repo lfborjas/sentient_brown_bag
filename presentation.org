@@ -95,9 +95,9 @@ A bit terse, but close to how we'd describe the solution:
 
 #+begin_src clojure :results output
 
-(require '(sentient-brown-bag.helpers as :h))
+(require '[sentient-brown-bag.sudoku :as h])
 
-(print (time (h/pprint-board h/sample-board)))
+(h/pprint-board h/example-board)
 
 (defn solve-sudoku
   ;; given a board
@@ -117,11 +117,11 @@ A bit terse, but close to how we'd describe the solution:
     board)) 
 
 ;; pipe the sample board into the solver, and print the result
-(print (time (-> h/sample-board solve-sudoku h/pprint-board)))
+(time (-> h/example-board solve-sudoku h/pprint-board))
 
 #+end_src
 
-Of course, all the beauty fades away when you look into all the [[file:src/main.clj] [ancillary functions]] necessary.
+Of course, all the beauty fades away when you look into all the [[file:src/sentient_brown_bag/sudoku.clj] [ancillary functions]] necessary.
 
 *Think about the time and space complexity!*
 
@@ -139,6 +139,7 @@ Of course, all the beauty fades away when you look into all the [[file:src/main.
   (assoc '[:a :b - :d] 2 :c)
   (if-let [[i & _] [4 3 2]] i :empty)
   (if-let [[i & _] nil] i :empty))
+
 
 #+end_src
 
