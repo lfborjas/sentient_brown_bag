@@ -64,18 +64,20 @@
 
 (defn allocations [u sz]
   (let [vars (repeatedly sz #(vec [(logic/lvar) (logic/lvar)]))]
-    (r/with-db facts0
-      (logic/run* [q]
-        (logic/== q vars)
-        (logic/distincto (map second vars))
-        (logic/everyg sampleo vars)
-        (logic/everyg (partial likeso u) vars)))))
-
+    (distinct
+     (map set
+          (r/with-db facts0
+            (logic/run* [q]
+              (logic/== q vars)
+              (logic/distincto (map second vars))
+              (logic/everyg sampleo vars)
+              (logic/everyg (partial likeso u) vars)))))))
 
 (comment
-  (allocations "Luis" 3)
-  (allocations "Romy" 3))
+  (count (allocations "Luis" 3))
+  (count (allocations "Romy" 2)))
 
+(distinct (map set '([:a :b :c] [:c :b :a])))
 ;; from https://github.com/clojure/core.logic/wiki/Features
 
 ;; finite domains (constraint logic programming)
