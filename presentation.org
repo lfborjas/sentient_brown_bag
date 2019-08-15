@@ -81,20 +81,23 @@ m
 
 * A restatement of values
 
-- The ideal of functional programming is to reflect the form of the solution.
+- The ideal of functional programming is to reflect the form of the solution. To /declare/ it.
 - That is, to be unencumbered by the /how/ and express the /what/.
 - Sometimes this means exploring paradigms beyond, or beneath (underlying), programming.
+- An example, if we have time: Sudoku.
 
 * Chapter II: Old words, new tricks
 
 * Ground terms
 
 - A /variable/ is an ambiguous "thing" that can be anything (have any value)
-- Once we learn more about the *closed world* of the variable, we may learn its value
+- Once we learn more about the *closed world* of the variable, we may learn its value.
 - A /term/ is the value a variable ends up with. It can have variables in it.
-- If a term has no variables, it's a /ground term/; else, it's a /pattern/
+- If a term has no variables, it's a /ground term/; else, it's a /pattern/.
 - A rule is a joining of patterns that must be true together.
-- To /unify/ is to glean all knowledge possible from a set of patterns and rules.
+- To /satisfy/ is to find a world (of values) where all given patterns/rules can be true.
+- To /unify/ is to see if a rule or pattern can be made equal to another.
+- We find answers via unification.
 
 * A simple implementation 
 
