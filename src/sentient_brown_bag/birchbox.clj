@@ -58,7 +58,7 @@
   (ask-db facts0 [q] (likeso "Romy" ["Smashbox Always On" :makeup]))
   (ask-db facts0 [q p] (likeso "Romy" [q p]))
   (ask-db facts0 [q p] (dislikeso "Luis" [q p]))
-  (ask-db facts0 [u q p] (dislikeso u [q p]))q)
+  (ask-db facts0 [u q p] (dislikeso u [q p])))
 
 ;; use the rules to "solve" for allocations declaratively
 
@@ -69,6 +69,7 @@
           (r/with-db facts0
             (logic/run* [q]
               (logic/== q vars)
+              (logic/distincto q)
               (logic/distincto (map second vars))
               (logic/everyg sampleo vars)
               (logic/everyg (partial likeso u) vars)))))))
