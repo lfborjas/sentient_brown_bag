@@ -7,8 +7,6 @@
 ;; Basic logic: pattern matching and unification
 
 
-
-
 ;; relations
 
 (r/db-rel sample title concern)

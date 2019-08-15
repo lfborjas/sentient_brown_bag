@@ -6,6 +6,8 @@
 
 * Chapter I: A Remembrance
 
+* A whirlwind tour
+
 Let's remember Clojure: it barely has syntax
 
 #+begin_src clojure :results output
@@ -74,7 +76,129 @@ m
 #+end_src
 
 
-* Chapter II: The Problem of Search
+
+
+
+* A restatement of values
+
+- The ideal of functional programming is to reflect the form of the solution.
+- That is, to be unencumbered by the /how/ and express the /what/.
+- Sometimes this means exploring paradigms beyond, or beneath (underlying), programming.
+
+* Chapter II: Old words, new tricks
+
+* Ground terms
+
+- A /variable/ is an ambiguous "thing" that can be anything (have any value)
+- Once we learn more about the *closed world* of the variable, we may learn its value
+- A /term/ is the value a variable ends up with. It can have variables in it.
+- If a term has no variables, it's a /ground term/; else, it's a /pattern/
+- A rule is a joining of patterns that must be true together.
+- To /unify/ is to glean all knowledge possible from a set of patterns and rules.
+
+* A simple implementation 
+
+[[file:src/sentient_brown_bag/minilogic.clj][A little tour of some code]]
+
+
+* Chapter III: A new abstraction
+
+* A less tumultuous tour
+
+#+begin_src clojure :results output
+
+(require '[clojure.core.logic :as l])
+
+;; == is core.logic's unify
+;; run* can be seen as an improved "satisfy": takes variables
+;; and logic expressions, returns the values the variables could take
+;; to satisfy the expressions
+(l/run* [answer]
+  (l/== answer 5))
+
+(l/run* [x y]
+  (l/== [1 x 3] [1 2 y]))
+
+;; this is a "conjunction": all expressions in `run`
+;; are "goals" to be satisfied
+(l/run* [x y]
+  (l/== x y)
+  (l/== x 1))
+
+;; it's powerful enough to look into any data structure
+(l/run* [q]
+  (l/== {:a q :b 2} {:a 1 :b 2}))
+
+;; returns two "raw" logic variables. Notice that they're the same, which
+;; is the engine's way of saying "I need more info, but I do know they should be the same"
+(l/run* [x y]
+  (l/== x y))
+
+;; there's some more exciting operations, of course:
+
+(l/run* [q]
+  (l/membero q [1 2 3]))
+
+(l/run* [q]
+  (l/membero q [1 2 3])
+  (l/membero q [3 4 5]))
+
+;; there's also a disjunction: you can introduce many possible branches
+;; and it'll return the ones that succeed:
+
+(l/run* [q]
+  (l/conde
+    [(l/== q 1)]
+    [(l/== q 2)]))
+
+(l/run* [q]
+  (l/conde
+    [(l/== q 1) (l/== q 3)]
+    [(l/== q 2)]))
+
+;; lastly, some lisp-ness
+
+(cons 0 [1 2 3])
+
+(l/run* [q]
+  (l/conso 1 [2 3] q))
+
+(l/run* [q]
+  (l/conso 1 q [1 2 3]))
+
+(l/run* [q]
+  (l/conso q [2 3] [1 2 3]))
+
+(l/run* [q]
+  (l/conso 1 [2 q] [1 2 3]))
+
+;; that is, in logic programming you define operations with the result
+;; as part of the terms, which means you can ask them questions about
+;; any term, not just the result! Here's some magic:
+
+(l/run* [x y]
+  (l/appendo x y [1 2 3 4]))
+
+#+end_src clojure
+
+
+* Chapter IV: A Statement of Facts
+
+[[file:src/sentient_brown_bag/birchbox.clj][Another little code tour]]
+
+* Epilogue: Further Reading
+
+- [[https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-29.html#%_sec_4.4][SICP, Chapter 4, Section 4: Logic Programming]]
+- [[https://www.oreilly.com/library/view/the-joy-of/9781617291418/kindle_split_034.html][The Joy of Clojure: Chapter 16: "Thinking Programs"]]
+- [[https://github.com/joyofclojure/book-source/tree/master/src/clj/joy/logic][The Joy of Clojure source code for Chapter 16's code samples]]
+- [[https://mitpress.mit.edu/books/reasoned-schemer-second-edition][The Reasoned Schemer ($)]]
+- [[http://minikanren.org/][Implementations of miniKanren in a bunch of languages]]
+- [[https://github.com/clojure/core.logic/wiki/A-Core.logic-Primer][The core.logic wiki: a primer]]
+- [[https://github.com/clojure/core.logic/wiki/A-Core.logic-Primer][The core.logic wiki: feature tour]]
+- [[https://www.youtube.com/watch?v=5vtC7WEN76w][A simply amazing video by the author of The Reasoned Schemer]]
+
+
+* Appendix: The Problem of Search
 
 Consider the game of Sudoku: Given a 9x9 grid, fill in the blanks such that:
 
@@ -148,28 +272,6 @@ Time permitting, we can explore the [[file:src/sentient_brown_bag/sudoku.clj][an
 - Worst case, it's suboptimal in space and time complexity!
 - Maybe we should just give up and do it in C?
 
-* Chapter III: The Gift of Knowledge
+* A logic solution
 
-- Define variables and /terms/
-- Lil bit of code to do inference
-- Lil bit of code to deal with seqs
-
-
-* Chapter IV: The Reasoned Clojurian
-
-- Quick core.logic primer
-- Finite domains
-
-* Chapter V: A Sentient Brown Bag
-
-- Present core.logic solution
-
-* Epilogue: Further Reading
-
-- [[https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-29.html#%_sec_4.4][SICP, Chapter 4, Section 4: Logic Programming]]
-- [[https://www.oreilly.com/library/view/the-joy-of/9781617291418/kindle_split_034.html][The Joy of Clojure: Chapter 16: "Thinking Programs"]]
-- [[https://github.com/joyofclojure/book-source/tree/master/src/clj/joy/logic][The Joy of Clojure source code for Chapter 16's code samples]]
-- [[https://mitpress.mit.edu/books/reasoned-schemer-second-edition][The Reasoned Schemer ($)]]
-- [[http://minikanren.org/][Implementations of miniKanren in a bunch of languages]]
-- [[https://github.com/clojure/core.logic/wiki/A-Core.logic-Primer][The core.logic wiki: a primer]]
-- [[https://github.com/clojure/core.logic/wiki/A-Core.logic-Primer][The core.logic wiki: feature tour]]
+TODO: add the sudoku in logic
