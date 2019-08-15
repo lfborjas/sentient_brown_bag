@@ -245,6 +245,37 @@ A bit terse, but close to how we'd describe the solution:
 
 #+end_src
 
+#+RESULTS:
+#+begin_example
+-------------------------------
+| 3  -  - | -  -  5 | -  1  - | 
+| -  7  - | -  -  6 | -  3  - | 
+| 1  -  - | -  9  - | -  -  - | 
+-------------------------------
+| 7  -  8 | -  -  - | -  9  - | 
+| 9  -  - | 4  -  8 | -  -  2 | 
+| -  6  - | -  -  - | 5  -  1 | 
+-------------------------------
+| -  -  - | -  4  - | -  -  6 | 
+| -  4  - | 7  -  - | -  2  - | 
+| -  2  - | 6  -  - | -  -  3 | 
+-------------------------------
+-------------------------------
+| 3  8  6 | 2  7  5 | 4  1  9 | 
+| 4  7  9 | 8  1  6 | 2  3  5 | 
+| 1  5  2 | 3  9  4 | 8  6  7 | 
+-------------------------------
+| 7  3  8 | 5  2  1 | 6  9  4 | 
+| 9  1  5 | 4  6  8 | 3  7  2 | 
+| 2  6  4 | 9  3  7 | 5  8  1 | 
+-------------------------------
+| 8  9  3 | 1  4  2 | 7  5  6 | 
+| 6  4  1 | 7  5  3 | 9  2  8 | 
+| 5  2  7 | 6  8  9 | 1  4  3 | 
+-------------------------------
+"Elapsed time: 688.035194 msecs"
+#+end_example
+
 Time permitting, we can explore the [[file:src/sentient_brown_bag/sudoku.clj][ancillary functions]] necessary.
 
 
@@ -274,4 +305,60 @@ Time permitting, we can explore the [[file:src/sentient_brown_bag/sudoku.clj][an
 
 * A logic solution
 
-TODO: add the sudoku in logic
+#+begin_src clojure :results output
+
+(require '[sentient-brown-bag.sudoku :as h])
+(require '[clojure.core.logic :as logic])
+(require '[clojure.core.logic.fd :as fd])
+
+(h/pprint-board h/example-board)
+
+(defn solve-sudoku-logically [board]
+  (let [legal-nums (fd/interval 1 9)
+        lvars (h/logic-board)
+        rows  (h/rowify lvars)
+        cols  (h/colify rows)
+        grids (h/subgrid rows)]
+    (logic/run 1 [q]
+      (h/init lvars board)
+      (logic/everyg #(fd/in % legal-nums) lvars)
+      (logic/everyg fd/distinct rows)
+      (logic/everyg fd/distinct cols)
+      (logic/everyg fd/distinct grids)
+      (logic/== q lvars))))
+
+;; pipe the sample board into the solver, and print the result
+(time (-> h/example-board solve-sudoku-logically first h/pprint-board))
+
+#+end_src
+
+#+RESULTS:
+#+begin_example
+-------------------------------
+| 3  -  - | -  -  5 | -  1  - | 
+| -  7  - | -  -  6 | -  3  - | 
+| 1  -  - | -  9  - | -  -  - | 
+-------------------------------
+| 7  -  8 | -  -  - | -  9  - | 
+| 9  -  - | 4  -  8 | -  -  2 | 
+| -  6  - | -  -  - | 5  -  1 | 
+-------------------------------
+| -  -  - | -  4  - | -  -  6 | 
+| -  4  - | 7  -  - | -  2  - | 
+| -  2  - | 6  -  - | -  -  3 | 
+-------------------------------
+-------------------------------
+| 3  8  6 | 2  7  5 | 4  1  9 | 
+| 4  7  9 | 8  1  6 | 2  3  5 | 
+| 1  5  2 | 3  9  4 | 8  6  7 | 
+-------------------------------
+| 7  3  8 | 5  2  1 | 6  9  4 | 
+| 9  1  5 | 4  6  8 | 3  7  2 | 
+| 2  6  4 | 9  3  7 | 5  8  1 | 
+-------------------------------
+| 8  9  3 | 1  4  2 | 7  5  6 | 
+| 6  4  1 | 7  5  3 | 9  2  8 | 
+| 5  2  7 | 6  8  9 | 1  4  3 | 
+-------------------------------
+"Elapsed time: 35.070744 msecs"
+#+end_example
