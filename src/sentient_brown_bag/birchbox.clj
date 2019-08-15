@@ -4,10 +4,7 @@
             [clojure.core.logic.pldb :as r]))
 
 
-;; Basic logic: pattern matching and unification
-
-
-;; relations
+;; relations and facts: set up the "universe" of knowledge
 
 (r/db-rel sample title concern)
 (r/db-rel dislikes user concern)
@@ -31,49 +28,53 @@
    [dislikes "Romy" :fragrance]))
 
 ;; defining some rules (subgoals/axioms)
-(defn likeso [u s]
-  (logic/fresh [c d]
-    (sample   s  c)
-    (dislikes u  d)
-    (logic/!= c  d)))
+(defn likeso [u [s c]]
+  (logic/fresh [d]
+    (sampleo   [s c])
+    (dislikes   u  d)
+    (logic/!=   c  d)))
 
-(defn dislikeso [u s]
-  (logic/fresh [c]
-    (sample   s c)
-    (dislikes u c)))
+(defn dislikeso [u [s c]]
+  (logic/fresh [d]
+    (sampleo   [s c])
+    (dislikes   u  d)
+    (logic/==   c  d)))
 
 (defn sampleo [v]
   (logic/fresh [s c]
     (sample s c)
-    (logic/== s v)))
+    (logic/== [s c] v)))
 
 (defmacro ask-db [db vars query]
   `(r/with-db ~db (logic/run* ~vars ~query)))
 
 ;; if a variable is returned, it's because the rule can be satisfied
 (comment
-  (r/with-db facts0 (logic/run* [q] (sampleo "Smashbox Always On")))
-  (ask-db facts0 [q] (sampleo "Smashbox Always Off"))
+  (r/with-db facts0 (logic/run* [q] (sampleo ["Smashbox Always On" :makeup])))
+  (ask-db facts0 [q] (sampleo ["Smashbox Always Off" :makeup]))
   (ask-db facts0 [q] (sampleo q))
-  (ask-db facts0 [q] (dislikeso "Luis" "Smashbox Always On"))
-  (ask-db facts0 [q] (likeso "Luis" "Smashbox Always On"))
-  (ask-db facts0 [q] (likeso "Romy" "Smashbox Always On"))
-  (ask-db facts0 [q] (likeso "Romy" q))
-  (ask-db facts0 [q] (dislikeso "Luis" q))
-  (ask-db facts0 [u q] (dislikeso u q)))
+  (ask-db facts0 [q] (dislikeso "Luis" ["Smashbox Always On" :makeup]))
+  (ask-db facts0 [q] (likeso "Luis" ["Smashbox Always On" :makeup]))
+  (ask-db facts0 [q] (likeso "Romy" ["Smashbox Always On" :makeup]))
+  (ask-db facts0 [q p] (likeso "Romy" [q p]))
+  (ask-db facts0 [q p] (dislikeso "Luis" [q p]))
+  (ask-db facts0 [u q p] (dislikeso u [q p]))q)
 
-(defn allocations [u n]
-  (let [vars (repeatedly 3 logic/lvar)]
+;; use the rules to "solve" for allocations declaratively
+
+(defn allocations [u n sz]
+  (let [vars (repeatedly sz [logic/lvar logic/lvar])]
     (r/with-db facts0
       (logic/run n [q]
         (logic/== q vars)
         (logic/distincto q)
-        (logic/everyg sampleo vars)
-        (logic/everyg (partial likeso u) vars)))))
+        (logic/everyg #(sampleo (first %)) vars)
+        (logic/distincto (map #(apply concerno %) vars))
+        #_(logic/everyg (partial likeso u) vars)))))
 
 (comment
-  (allocations "Luis" 1)
-  (allocations "Romy" 3))
+  (allocations "Luis" 1 3)
+  (allocations "Romy" 3 3))
 
 ;; from https://github.com/clojure/core.logic/wiki/Features
 
