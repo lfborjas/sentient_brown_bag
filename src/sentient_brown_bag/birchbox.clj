@@ -3,6 +3,14 @@
             [clojure.core.logic.fd :as fd]
             [clojure.core.logic.pldb :as r]))
 
+
+;; Basic logic: pattern matching and unification
+
+
+
+
+;; relations
+
 (r/db-rel sample title concern)
 (r/db-rel dislikes user concern)
 
@@ -68,3 +76,16 @@
 (comment
   (allocations "Luis" 1)
   (allocations "Romy" 3))
+
+;; from https://github.com/clojure/core.logic/wiki/Features
+
+;; finite domains (constraint logic programming)
+
+(comment
+  (logic/run* [q] (fd/in q (fd/interval 1 5)))
+  (logic/run* [q]
+    (logic/fresh [x y]
+      (fd/in x y (fd/interval 1 10))
+      (fd/+ x y 10)
+      #_(fd/distinct [x y])
+      (logic/== q [x y]))))

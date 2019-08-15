@@ -171,3 +171,5 @@ Time permitting, we can explore the [[file:src/sentient_brown_bag/sudoku.clj][an
 - [[https://github.com/joyofclojure/book-source/tree/master/src/clj/joy/logic][The Joy of Clojure source code for Chapter 16's code samples]]
 - [[https://mitpress.mit.edu/books/reasoned-schemer-second-edition][The Reasoned Schemer ($)]]
 - [[http://minikanren.org/][Implementations of miniKanren in a bunch of languages]]
+- [[https://github.com/clojure/core.logic/wiki/A-Core.logic-Primer][The core.logic wiki: a primer]]
+- [[https://github.com/clojure/core.logic/wiki/A-Core.logic-Primer][The core.logic wiki: feature tour]]
