@@ -95,9 +95,9 @@ m
 - A /term/ is the value a variable ends up with. It can have variables in it.
 - If a term has no variables, it's a /ground term/; else, it's a /pattern/.
 - A rule is a joining of patterns that must be true together.
-- To /satisfy/ is to find a world (of values) where all given patterns/rules can be true.
-- To /unify/ is to see if a rule or pattern can be made equal to another.
-- We find answers via unification.
+- To /satisfy/ is to find a world (of values) where all given patterns/rules can be true. We usually are interested in specific unknown variables.
+- To /unify/ is to see if a term (rule/pattern) can be made equal to another (have the same set of values)
+
 
 * A simple implementation 
 
