@@ -28,6 +28,11 @@
    [dislikes "Romy" :fragrance]))
 
 ;; defining some rules (subgoals/axioms)
+(defn sampleo [v]
+  (logic/fresh [s c]
+    (sample s c)
+    (logic/== [s c] v)))
+
 (defn likeso [u [s c]]
   (logic/fresh [d]
     (sampleo   [s c])
@@ -39,11 +44,6 @@
     (sampleo   [s c])
     (dislikes   u  d)
     (logic/==   c  d)))
-
-(defn sampleo [v]
-  (logic/fresh [s c]
-    (sample s c)
-    (logic/== [s c] v)))
 
 (defmacro ask-db [db vars query]
   `(r/with-db ~db (logic/run* ~vars ~query)))
@@ -62,19 +62,19 @@
 
 ;; use the rules to "solve" for allocations declaratively
 
-(defn allocations [u n sz]
-  (let [vars (repeatedly sz [logic/lvar logic/lvar])]
+(defn allocations [u sz]
+  (let [vars (repeatedly sz #(vec [(logic/lvar) (logic/lvar)]))]
     (r/with-db facts0
-      (logic/run n [q]
+      (logic/run* [q]
         (logic/== q vars)
-        (logic/distincto q)
-        (logic/everyg #(sampleo (first %)) vars)
-        (logic/distincto (map #(apply concerno %) vars))
-        #_(logic/everyg (partial likeso u) vars)))))
+        (logic/distincto (map second vars))
+        (logic/everyg sampleo vars)
+        (logic/everyg (partial likeso u) vars)))))
+
 
 (comment
-  (allocations "Luis" 1 3)
-  (allocations "Romy" 3 3))
+  (allocations "Luis" 3)
+  (allocations "Romy" 3))
 
 ;; from https://github.com/clojure/core.logic/wiki/Features
 
