@@ -2,7 +2,7 @@
 
 A small 1-hour exploration of logic programming, using Clojure's `core.logic` contrib library as inspiration and tool, and following the examples set forth in The Joy of Clojure's delightful chapter on the matter.
 
-If you're looking for the slides, Github happens to have pretty neat rendering of org-mode files so look no further than <presentation.org>
+If you're looking for the slides, Github happens to have pretty neat rendering of org-mode files so look no further than [presentation.org](https://github.com/lfborjas/sentient_brown_bag/blob/master/presentation.org)
 
 ## Setup
 
