@@ -3,6 +3,8 @@
 
 ** A Lisp Adventure
 
+*** And a farewell gift
+
 
 * Chapter I: A Remembrance
 
@@ -59,7 +61,7 @@ m
 
 ;; functional approach to sequence stuff:
 
-(reduce + (filter odd? (range 1 10)))
+(reduce + (filter even? (range 1 10)))
 
 ;; laziness in sequences:
 
@@ -86,13 +88,13 @@ m
 - Sometimes this means exploring paradigms beyond, or beneath (underlying), programming.
 - An example, if we have time: Sudoku.
 
+
 * Chapter II: Old words, new tricks
 
 * Ground terms
 
 - A /variable/ is an ambiguous "thing" that can be anything (have any value)
 - Once we learn more about the *closed world* of the variable, we may learn its value.
-- If a term has no variables, it's a /ground term/; else, it's a /pattern/.
 - A goal is a pattern or a relation with variables (unknowns). To /satisfy/ a goal is to find values that make it true.
 - To /unify/ is to see if a term (rule/pattern) can be made equal to another (have the same set of values)
 - To /run/ a logic program is to find values that make all of its goals true. The basis of finding this is *unification*
@@ -107,7 +109,7 @@ m
 
 * Chapter III: A new abstraction
 
-* A less tumultuous tour
+*  A less tumultuous tour
 
 #+begin_src clojure :results output
 
@@ -174,7 +176,7 @@ m
   (l/conso q [2 3] [1 2 3]))
 
 (l/run* [q]
-  (l/conso 1 [2 q] [1 2 3]))
+  (l/conso 1 [2 q] [1 2 3 4]))
 
 ;; that is, in logic programming you define operations with the result
 ;; as part of the terms, which means you can ask them questions about
@@ -248,7 +250,7 @@ To see a much much better explanation, see [[http://mullr.github.io/micrologic/l
 - [[https://www.youtube.com/watch?v=5vtC7WEN76w][A simply amazing video by the author of The Reasoned Schemer]]
 - [[http://webyrd.net/scheme-2013/papers/HemannMuKanren2013.pdf][MicroKanren paper]] and [[https://github.com/jasonhemann/microKanren/blob/master/microKanren.scm][Source]]
 - [[https://github.com/frenchy64/Logic-Starter/wiki][A very good introduction to logic programming with Clojure]]
-
+- [[http://mullr.github.io/micrologic/literate.html][A Clojure implementation of microKanren, well-explained]]
 
 * Appendix: The Problem of Search
 
@@ -284,8 +286,6 @@ A bit terse, but close to how we'd describe the solution:
            (and (some  '#{-} board)  
                 ;; find all positions for empty cells
                 (h/pos '#{-} board))] 
-    ;; solve the board with the new placement (creating a new board!)
-    ;; it will either go deeper, one solved cell each time, or terminate
     (flatten (map #(solve-sudoku (assoc board i %)) 
                   ;; get all possible numbers for this position
                   (h/possible-placements board i))) 
