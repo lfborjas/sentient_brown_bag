@@ -92,16 +92,17 @@ m
 
 - A /variable/ is an ambiguous "thing" that can be anything (have any value)
 - Once we learn more about the *closed world* of the variable, we may learn its value.
-- A /term/ is the value a variable ends up with. It can have variables in it.
 - If a term has no variables, it's a /ground term/; else, it's a /pattern/.
-- A rule is a joining of patterns that must be true together.
-- To /satisfy/ is to find a world (of values) where all given patterns/rules can be true. We usually are interested in specific unknown variables.
+- A goal is a pattern or a relation with variables (unknowns). To /satisfy/ a goal is to find values that make it true.
 - To /unify/ is to see if a term (rule/pattern) can be made equal to another (have the same set of values)
+- To /run/ a logic program is to find values that make all of its goals true. The basis of finding this is *unification*
 
 
 * A simple implementation 
 
 [[file:src/sentient_brown_bag/minilogic.clj][A little tour of some code]]
+
+
 
 
 * Chapter III: A new abstraction
@@ -184,6 +185,52 @@ m
 
 #+end_src clojure
 
+* A review
+
+In the relational paradigm, we think about relations between terms, and to program is to define relations in terms of... other relations; ultimately seeking unification.
+
+#+begin_src clojure
+
+;; Now we can define some user-level goals for sequences. First, conso says that out is the sequence with the head first and the tail rest.
+(defn conso [first rest out]
+  (if (lvar? rest)
+    (=== [first dot rest] out)
+    (=== (cons first rest) out)))
+
+;; firsto simply says that first is the head of out.
+(defn firsto [first out]
+  (fresh [rest]
+    (conso first rest out)))
+
+;;And resto, likewise, says that rest is the tail of out.
+(defn resto [rest out]
+  (fresh [first]
+    (conso first rest out)))
+
+;;emptyo is a way to say that s must be an empty sequence.
+(defn emptyo [s]
+  (=== '() s))
+
+;;appendo says that out is the result of appending the sequence parameters seq1 and seq1.
+(defn appendo [seq1 seq2 out]
+  (conde
+    [(emptyo seq1) (=== seq2 out)]
+    [(fresh [first rest rec]
+       (conso first rest seq1)
+       (conso first rec out)
+       (appendo rest seq2 rec))]))
+
+#+end_src
+
+* Implementation
+
+To implement a "solver", is to recursively walk a set of goals accruing knowledge, until we reach a set of values, or fail.
+
+This is usually done with "interleaved search" of "lazy streams": each recursive iteration puts a new "thunk" in a stream,
+and only realizes it if needed. When streams are merged, they "trampoline" between each other. One can have goals that on their own could have a contradiction, or infinite solutions (a goal with no solutions simply terminates the search!) but adding other goals can limit the space.
+
+To see a much much better explanation, see [[http://mullr.github.io/micrologic/literate.html][This implementation of miniKanren in Clojure]], or [[http://webyrd.net/scheme-2013/papers/HemannMuKanren2013.pdf][This paper describing microKanren, a 39-line fully-implemented unification engine]]
+
 
 * Chapter IV: A Statement of Facts
 
@@ -199,6 +246,8 @@ m
 - [[https://github.com/clojure/core.logic/wiki/A-Core.logic-Primer][The core.logic wiki: a primer]]
 - [[https://github.com/clojure/core.logic/wiki/A-Core.logic-Primer][The core.logic wiki: feature tour]]
 - [[https://www.youtube.com/watch?v=5vtC7WEN76w][A simply amazing video by the author of The Reasoned Schemer]]
+- [[http://webyrd.net/scheme-2013/papers/HemannMuKanren2013.pdf][MicroKanren paper]] and [[https://github.com/jasonhemann/microKanren/blob/master/microKanren.scm][Source]]
+- [[https://github.com/frenchy64/Logic-Starter/wiki][A very good introduction to logic programming with Clojure]]
 
 
 * Appendix: The Problem of Search
