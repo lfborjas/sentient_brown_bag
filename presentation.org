@@ -3,9 +3,6 @@
 
 ** A Lisp Adventure
 
-*** And a farewell gift
-
-
 * Chapter I: A Remembrance
 
 * A whirlwind tour
@@ -37,7 +34,7 @@ m
 
 ;; expressions evaluate to values
 (+ 1 1)
-(if true "truth" "lies")
+(if (+ 1 1) "truth" "lies")
 (conj  [1 2 3 4] 5)
 (conj '(4 3 2 1) 5)
 
@@ -51,8 +48,8 @@ m
 (#(vector %2 %1) :x :y)
 
 ;; destructuring is cool (use a vector or map in an assignment scenario)
-((fn flip2 [[a b & _]] (vector b a)) [:x :y :z])
-((fn greet! [{name :name}] (str "Hello " name)) {:name "Luis" :age 666})
+((fn flip2 [[a b & stuff]] (vector b a)) [:x :y :z :foo :bar])
+((fn greet! [{nom :name}] (str "Hello " nom)) {:name "World" :age 666})
 
 ;; scoping is lexical
 (let [x 2
@@ -61,7 +58,7 @@ m
 
 ;; functional approach to sequence stuff:
 
-(reduce + (filter even? (range 1 10)))
+(reduce + (filter even? (range 10)))
 
 ;; laziness in sequences:
 
@@ -138,7 +135,8 @@ m
 ;; returns two "raw" logic variables. Notice that they're the same, which
 ;; is the engine's way of saying "I need more info, but I do know they should be the same"
 (l/run* [x y]
-  (l/== x y))
+  (l/== x y)
+  (l/== x 5))
 
 ;; there's some more exciting operations, of course:
 
@@ -157,9 +155,9 @@ m
     [(l/== q 1)]
     [(l/== q 2)]))
 
-(l/run* [q]
+(l/run* [q x]
   (l/conde
-    [(l/== q 1) (l/== q 3)]
+    [(l/== q 1) (l/== x 3)]
     [(l/== q 2)]))
 
 ;; lastly, some lisp-ness
